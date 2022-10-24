@@ -1303,7 +1303,7 @@ services.  This approach uses the DNS as the singular source of information
 about service reachability.  An alternative service advertisement only acts as a
 prompt for clients to seek updated information from the DNS.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
 <p id="section-1.2-2">To use this new design, a server advertises an alternative name using the
-"<a href="#field" class="internal xref">Alt-SvcB</a><span id="iref-alt-svcb-1" class="iref"></span>" header field.<a href="#section-1.2-2" class="pilcrow">¶</a></p>
+"<a href="#field" class="internal xref">Alt-SvcB</a><span id="iref-alt-svcb-1" class="iref"></span>" field.<a href="#section-1.2-2" class="pilcrow">¶</a></p>
 <div id="section-1.2-3">
 <pre class="lang-http-message sourcecode">
 200 OK HTTP/1.1
@@ -1369,9 +1369,10 @@ responds with a 421 (Misdirected Request) (see <span><a href="https://rfc-editor
 or a 5xx status code (see <span><a href="https://rfc-editor.org/rfc/rfc9110#section-15.6" class="relref">Section 15.6</a> of [<a href="#HTTP" class="cite xref">HTTP</a>]</span>), abort this process.<a href="#section-2-2.4" class="pilcrow">¶</a>
 </li>
         <li id="section-2-2.5">Once a response is received, the connection to the alternative is complete.
-Any other connections can be closed and future requests.  The client <span class="bcp14">SHOULD</span>
-remember the alternative name and the service name (the TargetName from the
-HTTPS ServiceMode record that was used) that were used; see <a href="#remember" class="auto internal xref">Section 2.1</a>.<a href="#section-2-2.5" class="pilcrow">¶</a>
+Any other connections can be closed and future requests directed to the
+alternative.  The client <span class="bcp14">SHOULD</span> remember the alternative name and the service
+name (the TargetName from the HTTPS ServiceMode record that was used) that
+were used; see <a href="#remember" class="auto internal xref">Section 2.1</a>.<a href="#section-2-2.5" class="pilcrow">¶</a>
 </li>
       </ol>
 <p id="section-2-3">A client <span class="bcp14">MUST NOT</span> remember a service name for an alternative service until a
@@ -1435,7 +1436,7 @@ those RRs that are marked "alt-only"; see <a href="#alt-only" class="auto intern
 <p id="section-2.2-2">A client does not make a query for the remembered alternative name.  They make a
 query for the name of the server, using the QNAME derived from the URI of the
 target resource.<a href="#section-2.2-2" class="pilcrow">¶</a></p>
-<p id="section-2.2-3">The RR that matches the remembered service name is selected, overridding any
+<p id="section-2.2-3">The RR that matches the remembered service name is selected, overriding any
 SvcPriority that might otherwise result in another ServiceMode record being
 chosen.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
 <p id="section-2.2-4">If a query for HTTPS records does not produce a ServiceMode record with a
@@ -1588,7 +1589,7 @@ an HTTP server <span class="bcp14">MUST</span> ignore any Alt-Svc fields or ALTS
 the server provides.  This document deprecates the mechanisms defined in RFC
 7838 <span>[<a href="#ALT-SVC" class="cite xref">ALT-SVC</a>]</span>.<a href="#section-2.6-1" class="pilcrow">¶</a></p>
 <p id="section-2.6-2">Servers might provide Alt-Svc fields or ALTSVC frames <span>[<a href="#ALT-SVC" class="cite xref">ALT-SVC</a>]</span> in order to
-support such clients.  Clients that cannot use HTTPS<a href="#section-2.6-2" class="pilcrow">¶</a></p>
+support clients that cannot use HTTPS records.<a href="#section-2.6-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="no-authority">
@@ -1604,19 +1605,19 @@ aspects of service configuration.  For protocol choice, <span>[<a href="#ALPN" c
 maybe <span>[<a href="#SNIP" class="cite xref">SNIP</a>]</span> extensions in the TLS handshake
 <span>[<a href="#TLS" class="cite xref">TLS</a>]</span> determine what is used.<a href="#section-2.7-1" class="pilcrow">¶</a></p>
 <p id="section-2.7-2">In contrast RFC 7838, sending alternative services over an HTTP connection
-ensures that the information is authoritative.  Clients are therefore might have
+ensures that the information is authoritative.  Clients therefore might have
 been less concerned about attacks that compromise the integrity of alternative
 services when using RFC 7838.<a href="#section-2.7-2" class="pilcrow">¶</a></p>
 <p id="section-2.7-3">Though integrity protection might appear to be valuable, it produced conflicts.
-For instance, information about the protocol is ostentibly authentic when
+For instance, information about the protocol is ostensibly authentic when
 provided in Alt-Svc fields or ALTSVC frames.  However, protocol support is also
 authenticated when establishing a connection.  This creates a potential conflict
 between two equally authoritative sources of the same information.<a href="#section-2.7-3" class="pilcrow">¶</a></p>
 <p id="section-2.7-4">Conflicts also arise when alternative service information is retained as any
 retained state might disagree with what is currently deployed.  This design
-avoids this contention by having the entire service resoltion process occur
+avoids this contention by having the entire service resolution process occur
 almost entirely to the DNS.<a href="#section-2.7-4" class="pilcrow">¶</a></p>
-<p id="section-2.7-5">An alternative service advertisement providing only a minimal nudge to perform a
+<p id="section-2.7-5">An alternative service advertisement provides only a minimal nudge to perform a
 DNS query at the time it is made.  On reconnection, remembered state only
 affects prioritization of active DNS records.  Invalid configurations do not
 persist.<a href="#section-2.7-5" class="pilcrow">¶</a></p>
