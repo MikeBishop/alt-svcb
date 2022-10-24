@@ -29,6 +29,10 @@ author:
     fullname: Martin Thomson
     organization: Mozilla
     email: mt@lowentropy.net
+ -
+    fullname: Mike Bishop
+    org: Akamai Technologies
+    email: mbishop@evequefou.be
 
 normative:
   HTTP: RFC9110
@@ -176,12 +180,7 @@ alternative as follows:
    were used; see {{remember}}.
 
 A client MUST NOT remember a service name for an alternative service until a
-request has been successfully completed with a 2xx or 3xx status code.  A client
-MAY send additional requests using the newly established connection to the
-alternative service after it verifies that the server is authoritative.  The
-alternative service is therefore active once the connection is established, but
-it will not be reused ({{reuse}}) for future connections until a request
-completes successfully.
+request has been successfully completed with a 2xx or 3xx status code.
 
 A client MAY continue sending other requests over any existing connection to the
 server until this process completes in order to minimize latency for those
@@ -264,12 +263,10 @@ query for "example.com" and receive in response:
 
 ~~~ dns
 example.com.  7200 IN HTTPS 1 . port=443
-alt1.example. 7200 IN HTTPS 10 . port=8443
 alt2.example. 7200 IN HTTPS 10 . port=8443
-alt3.example. 7200 IN HTTPS 10 . port=8443
 ~~~
 
-Under normal conditions, the SvcPriority of the "alt?.example." RRs would indicate
+Under normal conditions, the SvcPriority of the "alt2.example." RR would indicate
 that it is not preferred, so the "example.com" record would be used.
 
 If the client received an alternative service advertisement from this server for
@@ -277,11 +274,12 @@ If the client received an alternative service advertisement from this server for
 return a different set of records, as follows:
 
 ~~~ dns
+alt1.example. 7200 IN HTTPS 1 . port=8887
 alt2.example. 7200 IN HTTPS 1 . port=8887
 alt3.example. 7200 IN HTTPS 1 . port=8887
 ~~~
 
-If the client selects "alt2.example." and successfully connects to that host, it
+If the client then successfully connects to "alt2.example" as a result, it
 remembers both the name given as an alternative name ("alt.example.net") and a
 service name (the TargetName from the ServiceMode HTTPS record,
 "alt2.example.").
@@ -293,9 +291,7 @@ AliasMode, CNAME, or similar mechanisms - produces the same records as previousl
 
 ~~~ dns
 example.com.  7200 IN HTTPS 1 . port=443
-alt1.example. 7200 IN HTTPS 10 . port=8443
 alt2.example. 7200 IN HTTPS 10 . port=8443
-alt3.example. 7200 IN HTTPS 10 . port=8443
 ~~~
 
 The ServiceMode HTTPS record for "alt2.example." is used, even though this is a
