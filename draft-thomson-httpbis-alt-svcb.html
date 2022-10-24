@@ -1149,7 +1149,7 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-caching-in-alternative-serv" class="internal xref">Caching in Alternative Services</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.2">
-                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-an-alternative-approach" class="internal xref">An Alternative Approach</a></p>
+                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-a-new-alternative" class="internal xref">A New Alternative</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.3">
                 <p id="section-toc.1-1.1.2.3.1" class="keepWithNext"><a href="#section-1.3" class="auto internal xref">1.3</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
@@ -1272,37 +1272,37 @@ deployments of alternative services.<a href="#section-1-4" class="pilcrow">¶</a
         <h3 id="name-caching-in-alternative-serv">
 <a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-caching-in-alternative-serv" class="section-name selfRef">Caching in Alternative Services</a>
         </h3>
-<p id="section-1.1-1">Setting the "ma" (or max-age) parameter for an alternative can be challenging
-for a server deployment.  Setting too a large max-age can mean that clients use
-an alternative for longer than they should.  Conversely, a short cache period
-for an advertisement for HTTP/3 can mean that earlier versions might be used
-more often than is optimal.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-1">With RFC 7838 <span>[<a href="#ALT-SVC" class="cite xref">ALT-SVC</a>]</span>, setting the "ma" (or max-age) parameter for
+an alternative can be challenging for a server deployment.  Setting too a large
+max-age can mean that clients use an alternative for longer than they should.
+Conversely, a short cache period for an advertisement for HTTP/3 can mean that
+earlier versions might be used more often than is optimal.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
 <p id="section-1.1-2">Alternative services can interact poorly with service configuration information
 that is published in the DNS.  With the introduction of HTTPS records
 <span>[<a href="#SVCB" class="cite xref">SVCB</a>]</span>, the availability of HTTP/3 can be
 advertised in the DNS, creating two independent sources of this information,
 with different approaches to caching.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
-<p id="section-1.1-3">Alternative services can also be highly dependent on networking conditions.
-<span>[<a href="#ALT-SVC" class="cite xref">ALT-SVC</a>]</span> attempted to manage this by having clients be responsible
-for invalidating alternatives when changes in their network are detected, unless
-the alternative is explicitly marked as "persistent".  In practice, detecting
-the necessary changes is difficult for many clients, so this requirement is not
-consistently implemented.<a href="#section-1.1-3" class="pilcrow">¶</a></p>
+<p id="section-1.1-3">Alternative services can also be highly dependent on networking conditions.  RFC
+7838 attempted to manage this by having clients be responsible for invalidating
+alternatives when changes in their network are detected, unless the alternative
+is explicitly marked as "persistent".  In practice, detecting the necessary
+changes is difficult for many clients, so this requirement is not consistently
+implemented.<a href="#section-1.1-3" class="pilcrow">¶</a></p>
 <p id="section-1.1-4">The alternative services mechanisms defined in RFC 7838 can produce suboptimal
 or even detrimental outcomes in some deployments.  Consequently, this document
 obsoletes RFC 7838.<a href="#section-1.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="an-alternative-approach">
+<div id="a-new-alternative">
 <section id="section-1.2">
-        <h3 id="name-an-alternative-approach">
-<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-an-alternative-approach" class="section-name selfRef">An Alternative Approach</a>
+        <h3 id="name-a-new-alternative">
+<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-a-new-alternative" class="section-name selfRef">A New Alternative</a>
         </h3>
 <p id="section-1.2-1">This document describes a different approach to advertising alternative
 services.  This approach uses the DNS as the singular source of information
 about service reachability.  An alternative service advertisement only acts as a
 prompt for clients to seek updated information from the DNS.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
-<p id="section-1.2-2">To use this new design, a server advertises an alternative server name using the
+<p id="section-1.2-2">To use this new design, a server advertises an alternative name using the
 "<a href="#field" class="internal xref">Alt-SvcB</a><span id="iref-alt-svcb-1" class="iref"></span>" header field.<a href="#section-1.2-2" class="pilcrow">¶</a></p>
 <div id="section-1.2-3">
 <pre class="lang-http-message sourcecode">
@@ -1313,8 +1313,15 @@ content-length: 0
 
 </pre><a href="#section-1.2-3" class="pilcrow">¶</a>
 </div>
-<p id="section-1.2-4">Clients can then consult the DNS, making HTTPS queries to this name in place of
-the name of the authority.  <a href="#use" class="auto internal xref">Section 2</a> defines how this name is used in detail.<a href="#section-1.2-4" class="pilcrow">¶</a></p>
+<p id="section-1.2-4">Clients can then consult the DNS, making HTTPS queries <span>[<a href="#SVCB" class="cite xref">SVCB</a>]</span> starting with
+this name. The alternative name is used in place of the name of the authority
+and using HTTPS records is mandatory, but the process otherwise follows normal
+HTTPS record resolution and connection procedures.  <a href="#use" class="auto internal xref">Section 2</a> defines how this
+name is used in detail.<a href="#section-1.2-4" class="pilcrow">¶</a></p>
+<p id="section-1.2-5">Future connections for requests to resources on the same server use HTTPS record
+resolution to the name of the authority, but are reprioritized if a successful
+connection was previously made to an alternative service.  <a href="#reuse" class="auto internal xref">Section 2.2</a> defines how
+this process works in more detail.<a href="#section-1.2-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -1363,8 +1370,8 @@ or a 5xx status code (see <span><a href="https://rfc-editor.org/rfc/rfc9110#sect
 </li>
         <li id="section-2-2.5">Once a response is received, the connection to the alternative is complete.
 Any other connections can be closed and future requests.  The client <span class="bcp14">SHOULD</span>
-remember the alternative name and the service name (TargetName) that were
-used; see <a href="#remember" class="auto internal xref">Section 2.1</a>.<a href="#section-2-2.5" class="pilcrow">¶</a>
+remember the alternative name and the service name (the TargetName from the
+HTTPS ServiceMode record that was used) that were used; see <a href="#remember" class="auto internal xref">Section 2.1</a>.<a href="#section-2-2.5" class="pilcrow">¶</a>
 </li>
       </ol>
 <p id="section-2-3">A client <span class="bcp14">MUST NOT</span> remember a service name for an alternative service until a
@@ -1413,7 +1420,7 @@ frames.  A client <span class="bcp14">MAY</span> periodically attempt to retry a
 information is repeated.<a href="#section-2.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="reusing-alternatives">
+<div id="reuse">
 <section id="section-2.2">
         <h3 id="name-reusing-alternatives">
 <a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-reusing-alternatives" class="section-name selfRef">Reusing Alternatives</a>

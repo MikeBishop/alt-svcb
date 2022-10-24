@@ -69,7 +69,7 @@ Table of Contents
 
    1.  Introduction
      1.1.  Caching in Alternative Services
-     1.2.  An Alternative Approach
+     1.2.  A New Alternative
      1.3.  Conventions and Definitions
    2.  Using Alternative Services
      2.1.  Retention of Alternatives
@@ -127,11 +127,12 @@ Table of Contents
 
 1.1.  Caching in Alternative Services
 
-   Setting the "ma" (or max-age) parameter for an alternative can be
-   challenging for a server deployment.  Setting too a large max-age can
-   mean that clients use an alternative for longer than they should.
-   Conversely, a short cache period for an advertisement for HTTP/3 can
-   mean that earlier versions might be used more often than is optimal.
+   With RFC 7838 [ALT-SVC], setting the "ma" (or max-age) parameter for
+   an alternative can be challenging for a server deployment.  Setting
+   too a large max-age can mean that clients use an alternative for
+   longer than they should.  Conversely, a short cache period for an
+   advertisement for HTTP/3 can mean that earlier versions might be used
+   more often than is optimal.
 
    Alternative services can interact poorly with service configuration
    information that is published in the DNS.  With the introduction of
@@ -140,7 +141,7 @@ Table of Contents
    different approaches to caching.
 
    Alternative services can also be highly dependent on networking
-   conditions.  [ALT-SVC] attempted to manage this by having clients be
+   conditions.  RFC 7838 attempted to manage this by having clients be
    responsible for invalidating alternatives when changes in their
    network are detected, unless the alternative is explicitly marked as
    "persistent".  In practice, detecting the necessary changes is
@@ -151,7 +152,7 @@ Table of Contents
    suboptimal or even detrimental outcomes in some deployments.
    Consequently, this document obsoletes RFC 7838.
 
-1.2.  An Alternative Approach
+1.2.  A New Alternative
 
    This document describes a different approach to advertising
    alternative services.  This approach uses the DNS as the singular
@@ -159,17 +160,26 @@ Table of Contents
    service advertisement only acts as a prompt for clients to seek
    updated information from the DNS.
 
-   To use this new design, a server advertises an alternative server
-   name using the "Alt-SvcB" header field.
+   To use this new design, a server advertises an alternative name using
+   the "Alt-SvcB" header field.
 
    200 OK HTTP/1.1
    date: Mon, 24 Oct 2022 02:58:31 GMT
    alt-svcb: "instance31.example.com"
    content-length: 0
 
-   Clients can then consult the DNS, making HTTPS queries to this name
-   in place of the name of the authority.  Section 2 defines how this
-   name is used in detail.
+   Clients can then consult the DNS, making HTTPS queries [SVCB]
+   starting with this name.  The alternative name is used in place of
+   the name of the authority and using HTTPS records is mandatory, but
+   the process otherwise follows normal HTTPS record resolution and
+   connection procedures.  Section 2 defines how this name is used in
+   detail.
+
+   Future connections for requests to resources on the same server use
+   HTTPS record resolution to the name of the authority, but are
+   reprioritized if a successful connection was previously made to an
+   alternative service.  Section 2.2 defines how this process works in
+   more detail.
 
 1.3.  Conventions and Definitions
 
@@ -215,7 +225,8 @@ Table of Contents
    5.  Once a response is received, the connection to the alternative is
        complete.  Any other connections can be closed and future
        requests.  The client SHOULD remember the alternative name and
-       the service name (TargetName) that were used; see Section 2.1.
+       the service name (the TargetName from the HTTPS ServiceMode
+       record that was used) that were used; see Section 2.1.
 
    A client MUST NOT remember a service name for an alternative service
    until a request has been successfully completed with a 2xx or 3xx
