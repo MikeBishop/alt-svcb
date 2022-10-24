@@ -368,8 +368,8 @@ Table of Contents
    "mandatory" SvcParam.
 
    In the following example, though "alt1.example" is listed at a higher
-   priority than "example.com", clients will not use this alternative
-   unless an alternative was provided by the server:
+   priority than "example.com", clients will not use this service unless
+   an alternative was provided by the server:
 
    alt1.example. 7200 IN HTTPS 1 . port=443,alt-only,mandatory=alt-only
    example.com.  7200 IN HTTPS 2 . port=443

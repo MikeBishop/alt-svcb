@@ -1507,8 +1507,8 @@ because the alternative has been remembered.<a href="#section-2.2.2-2" class="pi
 <p id="section-2.2.2-3">To prevent clients that do not support this specification from using these
 services, the "alt-only" SvcParamKey <span class="bcp14">MUST</span> be listed in the "mandatory" SvcParam.<a href="#section-2.2.2-3" class="pilcrow">¶</a></p>
 <p id="section-2.2.2-4">In the following example, though "alt1.example" is listed at a higher priority
-than "example.com", clients will not use this alternative unless an alternative
-was provided by the server:<a href="#section-2.2.2-4" class="pilcrow">¶</a></p>
+than "example.com", clients will not use this service unless an alternative was
+provided by the server:<a href="#section-2.2.2-4" class="pilcrow">¶</a></p>
 <div id="section-2.2.2-5">
 <pre class="lang-dns sourcecode">
 alt1.example. 7200 IN HTTPS 1 . port=443,alt-only,mandatory=alt-only
